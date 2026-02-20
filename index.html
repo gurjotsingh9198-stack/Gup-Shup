@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- ════════════════════════════════════
+         VIEWPORT — critical for mobile
+    ════════════════════════════════════ -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <!-- ════════════════════════════════════
+         GENERAL SEO / APP INFO
+    ════════════════════════════════════ -->
+    <title>Gupshup</title>
+    <meta name="description" content="Gupshup — Connect, Share & Explore" />
+    <meta name="theme-color" content="#080808" />
+
+    <!-- ════════════════════════════════════
+         PWA MANIFEST (Android + iOS)
+    ════════════════════════════════════ -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ════════════════════════════════════
+         iOS (Safari / iPhone) SPECIFIC TAGS
+    ════════════════════════════════════ -->
+
+    <!-- Makes it installable as a full-screen app on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Status bar style: black-translucent = extends under notch -->
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- App name shown under icon on home screen -->
+    <meta name="apple-mobile-web-app-title" content="Gupshup" />
+
+    <!-- iOS App Icons (Safari uses these, not manifest icons) -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="72x72"  href="/icons/icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="96x96"  href="/icons/icon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
+
+    <!-- iOS Splash Screens (shown while app loads) -->
+    <!-- iPhone 14 Pro Max -->
+    <link
+      rel="apple-touch-startup-image"
+      href="/splash/splash-1290x2796.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)"
+    />
+    <!-- iPhone 14 / 13 / 12 -->
+    <link
+      rel="apple-touch-startup-image"
+      href="/splash/splash-1170x2532.png"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"
+    />
+    <!-- iPhone SE -->
+    <link
+      rel="apple-touch-startup-image"
+      href="/splash/splash-750x1334.png"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+    />
+
+    <!-- ════════════════════════════════════
+         ANDROID / GENERAL TAGS
+    ════════════════════════════════════ -->
+
+    <!-- Android Chrome install banner color -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png" />
+
+    <!-- Open Graph (for sharing link previews) -->
+    <meta property="og:title" content="Gupshup" />
+    <meta property="og:description" content="Connect, Share & Explore" />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    <meta property="og:type" content="website" />
+
+    <!-- Prevent phone number auto-detection -->
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Safe area insets — works with your existing CSS env() usage -->
+    <style>
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+      }
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- React root -->
+    <div id="root"></div>
+
+    <!-- Your React app bundle -->
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- ════════════════════════════════════
+         SERVICE WORKER REGISTRATION
+         Works on both iOS Safari & Android Chrome
+    ════════════════════════════════════ -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .then((reg) => {
+              console.log("[SW] Registered:", reg.scope);
+            })
+            .catch((err) => {
+              console.warn("[SW] Registration failed:", err);
+            });
+        });
+      }
+
+      /* ── Android: Show native "Add to Home Screen" install prompt ── */
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Show a custom install button if you want
+        const installBtn = document.getElementById("install-btn");
+        if (installBtn) {
+          installBtn.style.display = "block";
+          installBtn.addEventListener("click", () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((result) => {
+              if (result.outcome === "accepted") {
+                console.log("User installed Gupshup");
+              }
+              deferredPrompt = null;
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
